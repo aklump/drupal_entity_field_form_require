@@ -4,6 +4,6 @@ package: 'In the Loft Studios'
 url: 'https://github.com/aklump/drupal_entity_field_form_require'
 type: module
 core_version_requirement: '^8 || ^9'
-version: 0.0.2
+version: 0.0.3
 php: 7.3
 author: aklump
