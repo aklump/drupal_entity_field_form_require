@@ -10,4 +10,7 @@ For entity fields, the idea of "required" is confusing. Is the field required to
 
 ## Configuration
 
-@todo
+(There is not yet a UI for this.)
+
+1. Implement `hook_entity_field_form_require_field_info`
+2. Test your forms that fields are being required as you expect.
