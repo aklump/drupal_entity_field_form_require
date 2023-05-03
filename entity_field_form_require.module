@@ -1,0 +1,38 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add checkboxed to manage form display UI to make the field required.
+ */
+function entity_field_form_require_form_entity_form_display_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  // TODO Add checkboxes to each field to make required in this mode.
+  // TODO Add submit handler to save the required settings.
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Disable field #required if being required by a form mode.
+ */
+function entity_field_form_require_form_field_config_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  $required_fields = \Drupal::moduleHandler()
+    ->invokeAll('entity_field_form_require_field_info');
+  $form_display = $form_state->getBuildInfo()['callback_object']->getEntity();
+  $field_name = $form_display->getFieldStorageDefinition()->getName();
+  if (empty($required_fields[$field_name]['display_ids'])) {
+    return;
+  }
+  $entity_type_id = $form_display->getTargetEntityTypeId();
+  $bundle = $form_display->getTargetBundle();
+  $look_for_prefix = "$entity_type_id.$bundle";
+  $matches = array_filter($required_fields[$field_name]['display_ids'], function ($item) use ($look_for_prefix) {
+    return strpos($item, $look_for_prefix) === 0;
+  });
+  if (!empty($matches)) {
+    $form['required']['#disabled'] = TRUE;
+    $form['required']['#description'] = t('This field is required by one or more form displays and cannot be changed here.  See the entity_field_form_require module for more info.');
+  }
+}

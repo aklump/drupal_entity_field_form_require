@@ -1,0 +1,8 @@
+/documentation/core/
+/documentation/README.md
+vendor/
+.idea/
+node_modules/
+*.jig.*
+feature--todos.md
+composer.lock

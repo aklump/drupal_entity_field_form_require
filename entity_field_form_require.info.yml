@@ -1,0 +1,8 @@
+name: 'Entity Field Form Require'
+description: 'Provides a means to set entity fields required under certain form conditions and not required otherwise.'
+package: 'In the Loft Studios'
+type: module
+core_version_requirement: '^8 || ^9'
+version: 0.0.0
+php: 7.3
+author: aklump

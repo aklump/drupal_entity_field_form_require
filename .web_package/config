@@ -1,0 +1,13 @@
+template = drupal
+remote = origin
+git_root = .
+master = "main"
+develop = "main"
+patch_prefix = .
+preserve_patch_zero = false
+do_version_commit = false
+create_tags = patch
+push_develop = no
+push_master = auto
+push_tags = auto
+info_file = entity_field_form_require.info.yml
