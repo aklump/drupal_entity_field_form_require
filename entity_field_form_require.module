@@ -40,7 +40,7 @@ function entity_field_form_require_form_alter(array &$form, FormStateInterface $
         continue;
       }
       $field_display_id = $field_definition->getTargetEntityTypeId() . '.' . $field_definition->getTargetBundle() . ".$display_mode";
-      $should_be_required = in_array($field_display_id, $required_fields[$name]['display_ids']);
+      $should_be_required = in_array($field_display_id, $required_fields[$name]['#required']['display_ids']);
       if ($should_be_required) {
         // TODO I'm not sure $form[$name] is the correct way to select the element in all cases, what if nested or grouped?
         EntityFieldFormRequire::makeElementRequired($form[$name], $form_state);
@@ -52,20 +52,20 @@ function entity_field_form_require_form_alter(array &$form, FormStateInterface $
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Disable field #required if being required by a form mode.
+ * Disable field #required in field config UI if being required by a form mode.
  */
 function entity_field_form_require_form_field_config_edit_form_alter(array &$form, FormStateInterface $form_state) {
   $required_fields = \Drupal::moduleHandler()
     ->invokeAll('entity_field_form_require_field_info');
   $form_display = $form_state->getBuildInfo()['callback_object']->getEntity();
   $field_name = $form_display->getFieldStorageDefinition()->getName();
-  if (empty($required_fields[$field_name]['display_ids'])) {
+  if (empty($required_fields[$field_name]['#required']['display_ids'])) {
     return;
   }
   $entity_type_id = $form_display->getTargetEntityTypeId();
   $bundle = $form_display->getTargetBundle();
   $look_for_prefix = "$entity_type_id.$bundle";
-  $matches = array_filter($required_fields[$field_name]['display_ids'], function ($item) use ($look_for_prefix) {
+  $matches = array_filter($required_fields[$field_name]['#required']['display_ids'], function ($item) use ($look_for_prefix) {
     return strpos($item, $look_for_prefix) === 0;
   });
   if (!empty($matches)) {
