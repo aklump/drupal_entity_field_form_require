@@ -20,7 +20,8 @@ function entity_field_form_require_form_entity_form_display_edit_form_alter(arra
  */
 function entity_field_form_require_form_alter(array &$form, FormStateInterface $form_state) {
   $form_object = $form_state->getBuildInfo()['callback_object'] ?? NULL;
-  if (!$form_object instanceof EntityFormInterface) {
+  // Everything we will do is going to require an entity and a form mode.
+  if (!$form_object instanceof EntityFormInterface || !isset($form_state->getStorage()['form_display'])) {
     return;
   }
 
@@ -31,6 +32,7 @@ function entity_field_form_require_form_alter(array &$form, FormStateInterface $
     $required_fields = \Drupal::moduleHandler()
       ->invokeAll('entity_field_form_require_field_info');
   }
+
   $display_mode = $form_state->getStorage()['form_display']->get('mode');
   foreach ($form_object->getEntity()->getFields() as $field) {
     $field_definition = $field->getFieldDefinition();
