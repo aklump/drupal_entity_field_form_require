@@ -10,9 +10,41 @@ use Drupal\field\Entity\FieldConfig;
  *
  * Add checkboxed to manage form display UI to make the field required.
  */
-function entity_field_form_require_form_entity_form_display_edit_form_alter(array &$form, FormStateInterface $form_state) {
-  // TODO Add checkboxes to each field to make required in this mode.
-  // TODO Add submit handler to save the required settings.
+//function entity_field_form_require_form_entity_form_display_edit_form_alter(array &$form, FormStateInterface $form_state) {
+//  // TODO Add checkboxes to each field to make required in this mode.
+//  // TODO Add submit handler to save the required settings.
+//  // TODO Add checkboxes to paragraphs but how, they don't seem to display the form modes yet.
+//}
+
+/**
+ * Implements hook_field_widget_complete_form_alter().
+ *
+ * Handles paragraphs only, for now.
+ */
+function entity_field_form_require_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context) {
+  if ('paragraph' !== ($context['form']['#entity_type'] ?? '')) {
+    return;
+  }
+
+  /** @var \Drupal\node\NodeForm $form_object */
+  $form_object = $form_state->getBuildInfo()['callback_object'];
+  $display_ids_context = [
+    'parent_entity' => $form_object->getEntity(),
+  ];
+  $field_display_ids = EntityFieldFormRequire::getAllDisplayIds($context['items'], $form_state, $display_ids_context);
+  if (!$field_display_ids) {
+    return;
+  }
+
+  // This is an entity form, so it may have fields that need to be marked
+  // required.  Proceed with looking for such.
+  $required_fields = EntityFieldFormRequire::getRequiredFieldsInfo();
+  $field_name = $context['items']->getFieldDefinition()->get('field_name');
+  $should_be_required = !empty($required_fields[$field_name]) && array_intersect($field_display_ids, $required_fields[$field_name]['#required']['display_ids']);
+  if ($should_be_required) {
+    // TODO I'm not sure $form['widget'] is the correct way to select the element in all cases?
+    EntityFieldFormRequire::makeElementRequired($field_widget_complete_form['widget'], $form_state);
+  }
 }
 
 /**
@@ -27,26 +59,21 @@ function entity_field_form_require_form_alter(array &$form, FormStateInterface $
 
   // This is an entity form, so it may have fields that need to be marked
   // required.  Proceed with looking for such.
-  $required_fields = &drupal_static(__FUNCTION__);
-  if (!isset($required_fields)) {
-    $required_fields = \Drupal::moduleHandler()
-      ->invokeAll('entity_field_form_require_field_info');
-  }
-
-  $display_mode = $form_state->getStorage()['form_display']->get('mode');
+  $required_fields = $required_fields = EntityFieldFormRequire::getRequiredFieldsInfo();
   foreach ($form_object->getEntity()->getFields() as $field) {
     $field_definition = $field->getFieldDefinition();
-    if ($field_definition instanceof FieldConfig) {
-      $name = $field_definition->get('field_name');
-      if (!array_key_exists($name, $required_fields)) {
-        continue;
-      }
-      $field_display_id = $field_definition->getTargetEntityTypeId() . '.' . $field_definition->getTargetBundle() . ".$display_mode";
-      $should_be_required = in_array($field_display_id, $required_fields[$name]['#required']['display_ids']);
-      if ($should_be_required) {
-        // TODO I'm not sure $form[$name] is the correct way to select the element in all cases, what if nested or grouped?
-        EntityFieldFormRequire::makeElementRequired($form[$name], $form_state);
-      }
+    $field_display_ids = EntityFieldFormRequire::getAllDisplayIds($field, $form_state);
+    if (!$field_display_ids) {
+      continue;
+    }
+    $field_name = $field_definition->get('field_name');
+    if (!array_key_exists($field_name, $required_fields)) {
+      continue;
+    }
+    $should_be_required = array_intersect($field_display_ids, $required_fields[$field_name]['#required']['display_ids']);
+    if ($should_be_required) {
+      // TODO I'm not sure $form[$field_name] is the correct way to select the element in all cases, what if nested or grouped?
+      EntityFieldFormRequire::makeElementRequired($form[$field_name], $form_state);
     }
   }
 }

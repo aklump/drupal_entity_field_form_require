@@ -14,3 +14,11 @@ For entity fields, the idea of "required" is confusing. Is the field required to
 
 1. Implement `hook_entity_field_form_require_field_info`
 2. Test your forms that fields are being required as you expect.
+
+Be aware that you can match paragraph fields at different specificities, take the following:
+
+```php
+paragraph.paragraph_bundle.form_mode
+parent_entity_type.parent_bundle.paragraph.paragraph_bundle.form_mode
+parent_entity_type.parent_bundle.parent_field_name.paragraph.paragraph_bundle.form_mode
+```
