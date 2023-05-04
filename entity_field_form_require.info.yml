@@ -1,6 +1,6 @@
 name: 'Entity Field Form Require'
 description: 'Provides a means to set entity fields required under certain form conditions and not required otherwise.'
-package: 'In the Loft Studios'
+package : Fields
 url: 'https://github.com/aklump/drupal_entity_field_form_require'
 type: module
 core_version_requirement: '^8 || ^9'
