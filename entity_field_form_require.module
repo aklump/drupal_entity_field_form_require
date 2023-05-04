@@ -98,7 +98,31 @@ function entity_field_form_require_form_field_config_edit_form_alter(array &$for
     return strpos($item, $look_for_prefix) === 0;
   });
   if (!empty($matches)) {
-    $form['required']['#disabled'] = TRUE;
-    $form['required']['#description'] = t('This field is required by one or more form displays and cannot be changed here.  See the entity_field_form_require module for more info.');
+    if ($form['required']['#default_value']) {
+      // The reason for this portion of code is if this was required at the time
+      // this module was enabled.  It must be able to be unchecked, and we tell
+      // them as much.
+      $form['required']['#description'] = t('This field is required by one or more form displays and cannot be required here.  See the %module module for more info.', ['%module' => 'Entity Field Form Require']);
+      $form['entity_field_form_require'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          'warning' => [
+            t("You must uncheck %label to allow %module to control form requirements for this field.", [
+              '%label' => t('Required field'),
+              '%module' => 'Entity Field Form Require',
+            ]),
+          ],
+        ],
+        '#status_headings' => [
+          'warning' => t('Warning message'),
+        ],
+      ];
+    }
+    else {
+      // ... However if it's not checked, then it should not be allowed to be
+      // checked while this module is enabled.
+      $form['required']['#disabled'] = TRUE;
+      $form['required']['#description'] = t('This field is required by one or more form displays and cannot be changed here.  See the entity_field_form_require module for more info.');
+    }
   }
 }
