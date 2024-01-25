@@ -15,11 +15,11 @@
  */
 function hook_entity_field_form_require_field_info() {
   return [
-    'field_worker_signature' => [
+    'field_foo' => [
       '#required' => [
         'display_ids' => [
-          'node.worker_timesheet.approve_worker',
-          'node.worker_timesheet.reject',
+          'node.bundle1.mode1',
+          'node.bundle2.mode2',
         ],
       ],
     ],
