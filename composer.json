@@ -1,0 +1,5 @@
+{
+    "name": "aklump_drupal/entity_field_form_require",
+    "type": "drupal-custom-module",
+    "license": "GPL-2.0-or-later"
+}
