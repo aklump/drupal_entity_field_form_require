@@ -4,6 +4,6 @@ package: Fields
 url: 'https://github.com/aklump/drupal_entity_field_form_require'
 type: module
 core_version_requirement: '^8 || ^9 || ^10'
-version: 0.0.6
+version: 0.0.7
 php: 7.3
 author: aklump
